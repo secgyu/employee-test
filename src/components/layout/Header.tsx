@@ -6,17 +6,18 @@ import { CartIcon, BellIcon, UserIcon } from "@/src/components/icons";
 import { SITE } from "@/src/constants/site";
 import logo from "@/src/assets/logo.png";
 
-interface IconButtonProps {
+interface IconLinkProps {
   label: string;
+  href: string;
   badge?: number;
   children: React.ReactNode;
 }
 
-// 우측 아이콘 버튼 (장바구니/알림)
-function IconButton({ label, badge, children }: IconButtonProps) {
+// 우측 아이콘 링크 (장바구니/알림/마이페이지)
+function IconLink({ label, href, badge, children }: IconLinkProps) {
   return (
-    <button
-      type="button"
+    <Link
+      href={href}
       aria-label={label}
       className="relative flex h-6 w-6 items-center justify-center text-ink transition-colors hover:text-brand"
     >
@@ -26,7 +27,7 @@ function IconButton({ label, badge, children }: IconButtonProps) {
           {badge}
         </span>
       ) : null}
-    </button>
+    </Link>
   );
 }
 
@@ -36,25 +37,21 @@ export function Header() {
       <div className="flex h-20 w-full max-w-[1280px] items-center justify-between gap-8">
         <div className="flex flex-1 items-center gap-10 lg:gap-[100px]">
           <Link href="/" aria-label={SITE.brand} className="shrink-0">
-            <Image src={logo} alt={SITE.brand} priority className="h-[18px] w-auto" />
+            <Image src={logo} alt={SITE.brand} className="h-[18px] w-auto" />
           </Link>
           <NavLinks />
         </div>
 
         <div className="flex items-center gap-6 text-ink">
-          <IconButton label="장바구니" badge={1}>
+          <IconLink label="장바구니" href="/cart" badge={1}>
             <CartIcon className="h-6 w-6" />
-          </IconButton>
-          <IconButton label="알림" badge={1}>
+          </IconLink>
+          <IconLink label="알림" href="/notifications" badge={1}>
             <BellIcon className="h-6 w-6" />
-          </IconButton>
-          <button
-            type="button"
-            aria-label="마이페이지"
-            className="flex h-6 w-6 items-center justify-center text-ink transition-colors hover:text-brand"
-          >
+          </IconLink>
+          <IconLink label="마이페이지" href="/login">
             <UserIcon className="h-6 w-6" />
-          </button>
+          </IconLink>
         </div>
       </div>
     </header>
