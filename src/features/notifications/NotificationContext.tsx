@@ -97,17 +97,25 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   );
 
   const markRead = useCallback(
-    (id: string) => {
+    async (id: string) => {
       setNotifications((prev) => prev.map((item) => (item.id === id ? { ...item, read: true } : item)));
-      void supabase.from("notifications").update({ read: true }).eq("id", id);
+      const { error } = await supabase.from("notifications").update({ read: true }).eq("id", id);
+      if (error) {
+        console.error("알림 읽음 처리 실패:", error.message);
+        void load();
+      }
     },
-    [supabase],
+    [supabase, load],
   );
 
-  const markAllRead = useCallback(() => {
+  const markAllRead = useCallback(async () => {
     setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
-    void supabase.from("notifications").update({ read: true }).eq("read", false);
-  }, [supabase]);
+    const { error } = await supabase.from("notifications").update({ read: true }).eq("read", false);
+    if (error) {
+      console.error("알림 모두 읽음 처리 실패:", error.message);
+      void load();
+    }
+  }, [supabase, load]);
 
   const reload = useCallback(() => {
     void load();
