@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { ChallengeApplyButton } from "@/src/components/challenges/ChallengeApplyButton";
-import { CHALLENGES } from "@/src/features/challenges/mock";
-import { CHALLENGE_STATUS_LABEL, type Challenge, type ChallengeStatus } from "@/src/features/challenges/types";
+import { CHALLENGE_STATUS_LABEL, type ChallengeStatus, type ChallengeWithState } from "@/src/features/challenges/types";
 
 type Filter = "all" | ChallengeStatus;
 
@@ -22,13 +21,15 @@ const STATUS_TONE: Record<ChallengeStatus, string> = {
   closed: "bg-black/5 text-muted",
 };
 
-function ChallengeCard({ challenge }: { challenge: Challenge }) {
-  const [joined, setJoined] = useState(false);
+function ChallengeCard({ challenge }: { challenge: ChallengeWithState }) {
+  const [participants, setParticipants] = useState(challenge.participants);
 
   const progress =
     challenge.totalRounds === 0 ? 0 : Math.round((challenge.completedRounds / challenge.totalRounds) * 100);
 
-  const participants = challenge.participants + (joined ? 1 : 0);
+  function handleJoinedChange(joined: boolean) {
+    setParticipants((prev) => prev + (joined ? 1 : -1));
+  }
 
   return (
     <div className="flex flex-col rounded-xl border border-[#E9EAEC] bg-white p-6">
@@ -70,7 +71,12 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-3">
-        <ChallengeApplyButton status={challenge.status} challengeTitle={challenge.title} onJoinedChange={setJoined} />
+        <ChallengeApplyButton
+          challengeId={challenge.id}
+          status={challenge.status}
+          initialJoined={challenge.joined}
+          onJoinedChange={handleJoinedChange}
+        />
         <Link
           href={`/challenge/${challenge.id}`}
           className="text-center text-[14px] font-medium text-brand hover:underline"
@@ -82,12 +88,12 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
   );
 }
 
-export function ChallengeList() {
+export function ChallengeList({ challenges }: { challenges: ChallengeWithState[] }) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filtered = useMemo(
-    () => (filter === "all" ? CHALLENGES : CHALLENGES.filter((c) => c.status === filter)),
-    [filter],
+    () => (filter === "all" ? challenges : challenges.filter((c) => c.status === filter)),
+    [filter, challenges],
   );
 
   return (

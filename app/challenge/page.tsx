@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ChallengeList } from "@/src/components/challenges/ChallengeList";
-import { LEADERBOARD } from "@/src/features/challenges/mock";
+import { getChallenges, getLeaderboard } from "@/src/features/challenges/api";
 
 export const metadata: Metadata = {
   title: "챌린지 | HIDDEN KICE",
@@ -28,7 +28,9 @@ const STEPS = [
   },
 ];
 
-export default function ChallengePage() {
+export default async function ChallengePage() {
+  const [challenges, leaderboard] = await Promise.all([getChallenges(), getLeaderboard()]);
+
   return (
     <div>
       {/* 히어로 */}
@@ -70,7 +72,7 @@ export default function ChallengePage() {
             지금 진행 중이거나 모집 중인 챌린지에 참여해 보세요.
           </p>
           <div className="mt-8">
-            <ChallengeList />
+            <ChallengeList challenges={challenges} />
           </div>
         </div>
       </section>
@@ -93,7 +95,7 @@ export default function ChallengePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F1F2F4]">
-              {LEADERBOARD.map((entry) => (
+              {leaderboard.map((entry) => (
                 <tr key={entry.rank} className="text-ink">
                   <td className="px-5 py-3 font-semibold text-brand">{entry.rank}</td>
                   <td className="px-5 py-3">{entry.nickname}</td>

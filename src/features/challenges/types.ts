@@ -33,6 +33,11 @@ export interface SeasonInfo {
   detail: string;
 }
 
+/** 현재 사용자의 신청 여부가 포함된 챌린지 */
+export interface ChallengeWithState extends Challenge {
+  joined: boolean;
+}
+
 export interface LeaderboardEntry {
   rank: number;
   nickname: string;

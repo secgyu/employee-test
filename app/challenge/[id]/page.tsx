@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ChallengeApplyPanel } from "@/src/components/challenges/ChallengeApplyPanel";
-import { getAllChallengeIds, getChallengeById, getChallengeCurriculum } from "@/src/features/challenges/mock";
+import { getChallengeById } from "@/src/features/challenges/api";
+import { getCurriculum } from "@/src/features/challenges/seasons";
 import { CHALLENGE_STATUS_LABEL, type ChallengeStatus } from "@/src/features/challenges/types";
 
 const STATUS_TONE: Record<ChallengeStatus, string> = {
@@ -12,13 +13,9 @@ const STATUS_TONE: Record<ChallengeStatus, string> = {
   closed: "bg-black/5 text-muted",
 };
 
-export function generateStaticParams() {
-  return getAllChallengeIds().map((id) => ({ id }));
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const challenge = getChallengeById(id);
+  const challenge = await getChallengeById(id);
   if (!challenge) return { title: "챌린지 | HIDDEN KICE" };
   return {
     title: `${challenge.title} | HIDDEN KICE`,
@@ -28,10 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const challenge = getChallengeById(id);
+  const challenge = await getChallengeById(id);
   if (!challenge) notFound();
 
-  const curriculum = getChallengeCurriculum(challenge);
+  const curriculum = getCurriculum(challenge.seasonIds);
   const progress =
     challenge.totalRounds === 0 ? 0 : Math.round((challenge.completedRounds / challenge.totalRounds) * 100);
 
@@ -103,8 +100,9 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
       {/* 신청 */}
       <div className="mt-12">
         <ChallengeApplyPanel
+          challengeId={challenge.id}
           status={challenge.status}
-          challengeTitle={challenge.title}
+          initialJoined={challenge.joined}
           baseParticipants={challenge.participants}
         />
       </div>
