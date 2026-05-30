@@ -22,20 +22,20 @@ alter table public.cart_items enable row level security;
 drop policy if exists "cart_select_own" on public.cart_items;
 create policy "cart_select_own"
   on public.cart_items for select
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists "cart_insert_own" on public.cart_items;
 create policy "cart_insert_own"
   on public.cart_items for insert
-  with check (auth.uid() = user_id);
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "cart_update_own" on public.cart_items;
 create policy "cart_update_own"
   on public.cart_items for update
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "cart_delete_own" on public.cart_items;
 create policy "cart_delete_own"
   on public.cart_items for delete
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);

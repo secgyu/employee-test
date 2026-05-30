@@ -37,15 +37,15 @@ alter table public.challenge_applications enable row level security;
 
 drop policy if exists "applications_select_own" on public.challenge_applications;
 create policy "applications_select_own"
-  on public.challenge_applications for select using (auth.uid() = user_id);
+  on public.challenge_applications for select using ((select auth.uid()) = user_id);
 
 drop policy if exists "applications_insert_own" on public.challenge_applications;
 create policy "applications_insert_own"
-  on public.challenge_applications for insert with check (auth.uid() = user_id);
+  on public.challenge_applications for insert with check ((select auth.uid()) = user_id);
 
 drop policy if exists "applications_delete_own" on public.challenge_applications;
 create policy "applications_delete_own"
-  on public.challenge_applications for delete using (auth.uid() = user_id);
+  on public.challenge_applications for delete using ((select auth.uid()) = user_id);
 
 -- 3) 신청/취소 시 challenges.participants 자동 증감 (집계는 공개, 개인정보는 비공개)
 create or replace function public.sync_challenge_participants()
