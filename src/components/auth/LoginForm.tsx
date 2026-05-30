@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 
 import { TextField } from "@/src/components/auth/TextField";
 import { signInAction } from "@/src/features/auth/actions";
+import { useNotifications } from "@/src/features/notifications/NotificationContext";
 import { isValidEmail } from "@/src/features/auth/validation";
 
 interface FieldErrors {
@@ -16,6 +17,7 @@ interface FieldErrors {
 /** 로그인 폼 (CSR). 클라이언트 검증 후 Supabase 서버 액션으로 인증한다. */
 export function LoginForm() {
   const router = useRouter();
+  const { reload } = useNotifications();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -35,6 +37,7 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await signInAction({ email, password });
       if (result.ok) {
+        reload();
         router.refresh();
         router.push("/");
       } else {
@@ -79,9 +82,7 @@ export function LoginForm() {
         </button>
       </form>
 
-      {formError ? (
-        <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-[14px] text-red-500">{formError}</p>
-      ) : null}
+      {formError ? <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-[14px] text-red-500">{formError}</p> : null}
 
       <p className="mt-6 text-center text-[14px] text-muted">
         아직 회원이 아니신가요?{" "}

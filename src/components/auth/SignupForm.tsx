@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 
 import { TextField } from "@/src/components/auth/TextField";
 import { signUpAction } from "@/src/features/auth/actions";
+import { useNotifications } from "@/src/features/notifications/NotificationContext";
 import { MIN_PASSWORD_LENGTH, isValidEmail, isValidPhone } from "@/src/features/auth/validation";
 
 interface FieldErrors {
@@ -19,6 +20,7 @@ interface FieldErrors {
 /** 회원가입 폼 (CSR). 클라이언트 검증 후 Supabase 서버 액션으로 가입한다. */
 export function SignupForm() {
   const router = useRouter();
+  const { reload } = useNotifications();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,6 +58,8 @@ export function SignupForm() {
         return;
       }
       // 세션이 즉시 생성된 경우(이메일 인증 비활성) 홈으로 이동
+      // 가입 환영 알림은 DB 트리거가 생성하므로 reload로 불러온다.
+      reload();
       router.refresh();
       router.push("/");
     });

@@ -17,6 +17,3 @@ export interface AppNotification {
   createdAt: string;
   read: boolean;
 }
-
-/** 목업/시드용: 읽음 여부를 제외한 알림 데이터 */
-export type NotificationSeed = Omit<AppNotification, "read">;
