@@ -4,17 +4,20 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { signOutAction } from "@/src/features/auth/actions";
+import { useCart } from "@/src/features/cart/CartContext";
 import { useNotifications } from "@/src/features/notifications/NotificationContext";
 
 export function LogoutButton() {
   const router = useRouter();
   const { reload } = useNotifications();
+  const { reload: reloadCart } = useCart();
   const [pending, startTransition] = useTransition();
 
   function handleLogout() {
     startTransition(async () => {
       await signOutAction();
       reload();
+      reloadCart();
       router.refresh();
       router.push("/");
     });

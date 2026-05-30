@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 
 import { TextField } from "@/src/components/auth/TextField";
 import { signUpAction } from "@/src/features/auth/actions";
+import { useCart } from "@/src/features/cart/CartContext";
 import { useNotifications } from "@/src/features/notifications/NotificationContext";
 import { MIN_PASSWORD_LENGTH, isValidEmail, isValidPhone } from "@/src/features/auth/validation";
 
@@ -21,6 +22,7 @@ interface FieldErrors {
 export function SignupForm() {
   const router = useRouter();
   const { reload } = useNotifications();
+  const { reload: reloadCart } = useCart();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -60,6 +62,7 @@ export function SignupForm() {
       // 세션이 즉시 생성된 경우(이메일 인증 비활성) 홈으로 이동
       // 가입 환영 알림은 DB 트리거가 생성하므로 reload로 불러온다.
       reload();
+      reloadCart();
       router.refresh();
       router.push("/");
     });

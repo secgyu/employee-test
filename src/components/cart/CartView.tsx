@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -9,8 +10,32 @@ import { CATEGORY_LABEL } from "@/src/features/products/types";
 
 /** 장바구니 페이지 (CSR). 담긴 상품 목록 / 수량 조절 / 삭제 / 합계. */
 export function CartView() {
-  const { items, totalPrice, removeItem, setQuantity, clear } = useCart();
+  const { items, totalPrice, removeItem, setQuantity, clear, loading, isLoggedIn } = useCart();
   const [message, setMessage] = useState("");
+
+  if (loading) {
+    return (
+      <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-4 px-4 py-[120px] text-center">
+        <h1 className="text-[28px] font-semibold text-black">장바구니</h1>
+        <p className="text-[15px] text-muted">불러오는 중...</p>
+      </section>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <section className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-4 px-4 py-[120px] text-center">
+        <h1 className="text-[28px] font-semibold text-black">장바구니</h1>
+        <p className="text-[15px] text-muted">장바구니는 로그인 후 이용할 수 있습니다.</p>
+        <Link
+          href="/login"
+          className="mt-2 h-12 rounded-md bg-brand px-6 text-[15px] font-medium leading-[48px] text-brand-foreground transition-opacity hover:opacity-90"
+        >
+          로그인하기
+        </Link>
+      </section>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -39,8 +64,12 @@ export function CartView() {
       <ul className="flex flex-col">
         {items.map((item) => (
           <li key={item.id} className="flex items-center gap-5 border-t border-[#E9EAEC] py-5 last:border-b">
-            {/* 썸네일 자리표시자 */}
-            <div className="h-[88px] w-[70px] shrink-0 rounded-[6px] border border-[#E9EAEC] bg-neutral-100" />
+            {/* 썸네일 */}
+            <div className="relative h-[88px] w-[70px] shrink-0 overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-neutral-100">
+              {item.imageUrl ? (
+                <Image src={item.imageUrl} alt={item.name} fill sizes="70px" className="object-cover" />
+              ) : null}
+            </div>
 
             <div className="min-w-0 flex-1">
               <p className="text-[14px] text-muted">{CATEGORY_LABEL[item.category]}</p>

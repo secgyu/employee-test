@@ -5,12 +5,9 @@ import { useState } from "react";
 
 import { useCart } from "@/src/features/cart/CartContext";
 import { formatKRW } from "@/src/features/products/format";
-import type { ProductCategory } from "@/src/features/products/types";
 
 interface ProductPurchaseProps {
   id: string;
-  name: string;
-  category: ProductCategory;
   /** 단가(할인가 우선). 없으면 수량/합계 미표시 */
   unitPrice?: number;
 }
@@ -19,21 +16,36 @@ interface ProductPurchaseProps {
  * 상세 페이지의 구매 영역 (CSR).
  * 수량 조절 + 합계 계산 + 장바구니 담기/바로 구매(장바구니 이동).
  */
-export function ProductPurchase({ id, name, category, unitPrice }: ProductPurchaseProps) {
+export function ProductPurchase({ id, unitPrice }: ProductPurchaseProps) {
   const router = useRouter();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
 
   const total = unitPrice ? unitPrice * quantity : undefined;
 
-  function handleAddToCart() {
-    addItem({ id, name, category, unitPrice: unitPrice ?? 0 }, quantity);
+  async function handleAddToCart() {
+    setMessage("");
+    setPending(true);
+    const result = await addItem(id, quantity);
+    setPending(false);
+    if (result.needLogin) {
+      router.push("/login");
+      return;
+    }
     setMessage("장바구니에 담았습니다.");
   }
 
-  function handleBuyNow() {
-    addItem({ id, name, category, unitPrice: unitPrice ?? 0 }, quantity);
+  async function handleBuyNow() {
+    setMessage("");
+    setPending(true);
+    const result = await addItem(id, quantity);
+    setPending(false);
+    if (result.needLogin) {
+      router.push("/login");
+      return;
+    }
     router.push("/cart");
   }
 
@@ -75,14 +87,16 @@ export function ProductPurchase({ id, name, category, unitPrice }: ProductPurcha
         <button
           type="button"
           onClick={handleAddToCart}
-          className="h-12 flex-1 rounded-md border border-brand text-[15px] font-medium text-brand transition-colors hover:bg-brand/5"
+          disabled={pending}
+          className="h-12 flex-1 rounded-md border border-brand text-[15px] font-medium text-brand transition-colors hover:bg-brand/5 disabled:opacity-50"
         >
           장바구니 담기
         </button>
         <button
           type="button"
           onClick={handleBuyNow}
-          className="h-12 flex-1 rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90"
+          disabled={pending}
+          className="h-12 flex-1 rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           바로 구매
         </button>

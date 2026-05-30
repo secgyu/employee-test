@@ -1,6 +1,6 @@
 import type { ProductCategory } from "@/src/features/products/types";
 
-/** 장바구니 담긴 상품 1건 */
+/** 장바구니 담긴 상품 1건 (products 조인 결과) */
 export interface CartItem {
   id: string;
   name: string;
@@ -8,4 +8,5 @@ export interface CartItem {
   /** 단가(할인가 우선). 가격 미정 상품은 0 */
   unitPrice: number;
   quantity: number;
+  imageUrl?: string;
 }

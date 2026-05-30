@@ -45,13 +45,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         {/* 이미지 */}
         <div className="relative flex aspect-25/32 w-full items-center justify-center overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-white">
           {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={name}
-              fill
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
-            />
+            <Image src={imageUrl} alt={name} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
           ) : (
             <span className="text-sm text-black/20">이미지 준비중</span>
           )}
@@ -79,7 +73,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </div>
 
           <div className="mt-8">
-            <ProductPurchase id={product.id} name={name} category={category} unitPrice={unitPrice} />
+            <ProductPurchase id={product.id} unitPrice={unitPrice} />
           </div>
         </div>
       </div>

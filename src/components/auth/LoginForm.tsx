@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 
 import { TextField } from "@/src/components/auth/TextField";
 import { signInAction } from "@/src/features/auth/actions";
+import { useCart } from "@/src/features/cart/CartContext";
 import { useNotifications } from "@/src/features/notifications/NotificationContext";
 import { isValidEmail } from "@/src/features/auth/validation";
 
@@ -18,6 +19,7 @@ interface FieldErrors {
 export function LoginForm() {
   const router = useRouter();
   const { reload } = useNotifications();
+  const { reload: reloadCart } = useCart();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -38,6 +40,7 @@ export function LoginForm() {
       const result = await signInAction({ email, password });
       if (result.ok) {
         reload();
+        reloadCart();
         router.refresh();
         router.push("/");
       } else {
