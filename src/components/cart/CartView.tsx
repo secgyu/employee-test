@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
 import { useCart } from "@/src/features/cart/CartContext";
 import { formatKRW } from "@/src/features/products/format";
@@ -11,7 +10,6 @@ import { CATEGORY_LABEL } from "@/src/features/products/types";
 /** 장바구니 페이지 (CSR). 담긴 상품 목록 / 수량 조절 / 삭제 / 합계. */
 export function CartView() {
   const { items, totalPrice, removeItem, setQuantity, clear, loading, isLoggedIn } = useCart();
-  const [message, setMessage] = useState("");
 
   if (loading) {
     return (
@@ -125,14 +123,12 @@ export function CartView() {
           <span className="text-[16px] text-ink">총 결제금액</span>
           <span className="text-[26px] font-semibold text-brand">{formatKRW(totalPrice)}</span>
         </div>
-        <button
-          type="button"
-          onClick={() => setMessage("결제 기능은 Supabase 연동 후 제공됩니다. (데모)")}
-          className="h-12 w-full rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90 sm:w-[280px]"
+        <Link
+          href="/checkout"
+          className="flex h-12 w-full items-center justify-center rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90 sm:w-[280px]"
         >
           주문하기
-        </button>
-        {message ? <p className="rounded-md bg-brand/5 px-4 py-3 text-[14px] text-brand">{message}</p> : null}
+        </Link>
       </div>
     </section>
   );

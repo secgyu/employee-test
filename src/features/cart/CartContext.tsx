@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { createClient } from "@/src/lib/supabase/client";
+import { CART_SELECT, toCartItem, type CartRow } from "@/src/features/cart/shared";
 import type { CartItem } from "@/src/features/cart/types";
-import type { ProductCategory } from "@/src/features/products/types";
 
 interface AddResult {
   ok: boolean;
@@ -25,33 +25,7 @@ interface CartContextValue {
   reload: () => void;
 }
 
-interface CartRow {
-  quantity: number;
-  product: {
-    id: string;
-    name: string;
-    category: ProductCategory;
-    price: number | null;
-    sale_price: number | null;
-    image_url: string | null;
-  } | null;
-}
-
 const CartContext = createContext<CartContextValue | null>(null);
-
-const CART_SELECT = "quantity, product:products(id, name, category, price, sale_price, image_url)";
-
-function toCartItem(row: CartRow): CartItem | null {
-  if (!row.product) return null;
-  return {
-    id: row.product.id,
-    name: row.product.name,
-    category: row.product.category,
-    unitPrice: row.product.sale_price ?? row.product.price ?? 0,
-    quantity: row.quantity,
-    imageUrl: row.product.image_url ?? undefined,
-  };
-}
 
 /**
  * 장바구니 전역 상태 (CSR, Supabase DB 기반).

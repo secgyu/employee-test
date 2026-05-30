@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/src/components/auth/LogoutButton";
@@ -27,6 +28,14 @@ export default async function AccountPage() {
       <div className="mt-6">
         <ProfileForm initialName={profile.name ?? ""} initialPhone={profile.phone ?? ""} />
       </div>
+
+      <Link
+        href="/orders"
+        className="mt-6 flex items-center justify-between rounded-2xl border border-[#E9EAEC] px-6 py-5 transition-colors hover:border-brand/40"
+      >
+        <span className="text-[15px] font-medium text-ink">주문 내역</span>
+        <span className="text-[14px] text-muted">보기 →</span>
+      </Link>
 
       <div className="mt-8 border-t border-[#F1F2F4] pt-8">
         <LogoutButton />
