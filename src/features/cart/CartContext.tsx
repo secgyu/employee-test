@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useAuthScopedData } from "@/src/lib/supabase/useAuthScopedData";
 import { CART_SELECT, toCartItem, type CartRow } from "@/src/features/cart/shared";
 import type { CartItem } from "@/src/features/cart/types";
 
@@ -32,16 +32,14 @@ const CartContext = createContext<CartContextValue | null>(null);
  * 로그인 사용자의 cart_items를 products와 조인해 조회/수정한다.
  */
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const supabaseRef = useRef(createClient());
-  const supabase = supabaseRef.current;
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const load = useCallback(async () => {
+  const { supabase, reload } = useAuthScopedData(async (client) => {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await client.auth.getUser();
 
     setIsLoggedIn(Boolean(user));
 
@@ -51,22 +49,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const { data } = await supabase.from("cart_items").select(CART_SELECT).order("created_at", { ascending: true });
+    const { data } = await client.from("cart_items").select(CART_SELECT).order("created_at", { ascending: true });
 
     const rows = (data as unknown as CartRow[] | null) ?? [];
     setItems(rows.map(toCartItem).filter((item): item is CartItem => item !== null));
     setLoading(false);
-  }, [supabase]);
-
-  useEffect(() => {
-    void load();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      void load();
-    });
-    return () => subscription.unsubscribe();
-  }, [load, supabase]);
+  });
 
   const addItem = useCallback(
     async (productId: string, quantity = 1): Promise<AddResult> => {
@@ -92,10 +80,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         await supabase.from("cart_items").insert({ user_id: user.id, product_id: productId, quantity });
       }
 
-      await load();
+      await reload();
       return { ok: true };
     },
-    [supabase, load],
+    [supabase, reload],
   );
 
   const removeItem = useCallback(
@@ -131,10 +119,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
     await supabase.from("cart_items").delete().eq("user_id", user.id);
   }, [supabase]);
-
-  const reload = useCallback(() => {
-    void load();
-  }, [load]);
 
   const totalCount = useMemo(() => items.reduce((sum, entry) => sum + entry.quantity, 0), [items]);
   const totalPrice = useMemo(() => items.reduce((sum, entry) => sum + entry.unitPrice * entry.quantity, 0), [items]);

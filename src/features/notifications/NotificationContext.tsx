@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useAuthScopedData } from "@/src/lib/supabase/useAuthScopedData";
 import type { AppNotification, NotificationType } from "@/src/features/notifications/types";
 
 interface NewNotificationInput {
@@ -49,34 +49,22 @@ function toNotification(row: NotificationRow): AppNotification {
  * 로그인한 사용자의 notifications 테이블을 조회/추가/읽음 처리한다.
  */
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const supabaseRef = useRef(createClient());
-  const supabase = supabaseRef.current;
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
-  const load = useCallback(async () => {
+  const { supabase, reload } = useAuthScopedData(async (client) => {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await client.auth.getUser();
 
     if (!user) {
       setNotifications([]);
       return;
     }
 
-    const { data } = await supabase.from("notifications").select(SELECT).order("created_at", { ascending: false });
+    const { data } = await client.from("notifications").select(SELECT).order("created_at", { ascending: false });
 
     setNotifications(((data as NotificationRow[] | null) ?? []).map(toNotification));
-  }, [supabase]);
-
-  useEffect(() => {
-    void load();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      void load();
-    });
-    return () => subscription.unsubscribe();
-  }, [load, supabase]);
+  });
 
   const addNotification = useCallback(
     async (input: NewNotificationInput) => {
@@ -102,10 +90,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const { error } = await supabase.from("notifications").update({ read: true }).eq("id", id);
       if (error) {
         console.error("알림 읽음 처리 실패:", error.message);
-        void load();
+        void reload();
       }
     },
-    [supabase, load],
+    [supabase, reload],
   );
 
   const markAllRead = useCallback(async () => {
@@ -113,13 +101,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const { error } = await supabase.from("notifications").update({ read: true }).eq("read", false);
     if (error) {
       console.error("알림 모두 읽음 처리 실패:", error.message);
-      void load();
+      void reload();
     }
-  }, [supabase, load]);
-
-  const reload = useCallback(() => {
-    void load();
-  }, [load]);
+  }, [supabase, reload]);
 
   const unreadCount = useMemo(() => notifications.filter((item) => !item.read).length, [notifications]);
 
