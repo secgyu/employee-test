@@ -1,23 +1,27 @@
-import { CATEGORY_LABEL, type Product } from "@/src/features/products/types";
+import Link from "next/link";
 
-function formatKRW(value: number) {
-  return `${value.toLocaleString("ko-KR")}원`;
-}
+import { formatKRW } from "@/src/features/products/format";
+import { CATEGORY_LABEL, type Product } from "@/src/features/products/types";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { category, name, price, discountRate, salePrice } = product;
+  const { id, category, name, price, discountRate, salePrice } = product;
 
   return (
-    <article className="flex flex-col">
-      <div className="flex h-[320px] w-full items-center justify-center overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-white">
+    <Link href={`/products/${id}`} className="group flex flex-col">
+      <div className="flex h-[320px] w-full items-center justify-center overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-white transition-shadow group-hover:shadow-md">
         <span className="text-sm text-black/20">이미지 준비중</span>
       </div>
+
       <p className="mt-2.5 text-[16px] font-semibold leading-[1.6] text-muted">{CATEGORY_LABEL[category]}</p>
-      <p className="text-[16px] font-semibold leading-[1.6] text-black">{name}</p>
+
+      <p className="text-[16px] font-semibold leading-[1.6] text-black transition-colors group-hover:text-brand">
+        {name}
+      </p>
+
       {price ? (
         <div className="mt-1">
           <p className="text-[14px] font-medium leading-normal text-[#B2B6BD] line-through">{formatKRW(price)}</p>
@@ -27,6 +31,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
       ) : null}
-    </article>
+    </Link>
   );
 }
