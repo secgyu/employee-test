@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { NavLinks } from "@/src/components/layout/NavLinks";
 import { CartLink } from "@/src/components/layout/CartLink";
-import { BellIcon, UserIcon } from "@/src/components/icons";
+import { BellLink } from "@/src/components/layout/BellLink";
+import { UserIcon } from "@/src/components/icons";
 import { SITE } from "@/src/constants/site";
 import logo from "@/src/assets/logo.png";
 
@@ -45,9 +46,7 @@ export function Header() {
 
         <div className="flex items-center gap-6 text-ink">
           <CartLink />
-          <IconLink label="알림" href="/notifications" badge={1}>
-            <BellIcon className="h-6 w-6" />
-          </IconLink>
+          <BellLink />
           <IconLink label="마이페이지" href="/login">
             <UserIcon className="h-6 w-6" />
           </IconLink>
