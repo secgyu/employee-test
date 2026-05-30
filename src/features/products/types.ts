@@ -12,4 +12,5 @@ export interface Product {
   price?: number;
   discountRate?: number;
   salePrice?: number;
+  imageUrl?: string;
 }

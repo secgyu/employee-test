@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { ProductCard } from "@/src/components/products/ProductCard";
-import { PRODUCTS } from "@/src/features/products/mock";
+import { getProducts } from "@/src/features/products/api";
 
 /** 홈에 노출할 최신 상품 개수 */
 const FEATURED_COUNT = 8;
@@ -10,8 +10,8 @@ const FEATURED_COUNT = 8;
  * 홈 "최신 상품" 섹션 (SSR).
  * 전체 상품 중 일부만 보여주고, 스토어 전체는 /products 로 연결한다.
  */
-export function FeaturedProducts() {
-  const products = PRODUCTS.slice(0, FEATURED_COUNT);
+export async function FeaturedProducts() {
+  const products = (await getProducts()).slice(0, FEATURED_COUNT);
 
   return (
     <section className="w-full bg-white">

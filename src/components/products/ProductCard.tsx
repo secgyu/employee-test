@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { formatKRW } from "@/src/features/products/format";
@@ -8,12 +9,22 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { id, category, name, price, discountRate, salePrice } = product;
+  const { id, category, name, price, discountRate, salePrice, imageUrl } = product;
 
   return (
     <Link href={`/products/${id}`} className="group flex flex-col">
-      <div className="flex h-[320px] w-full items-center justify-center overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-white transition-shadow group-hover:shadow-md">
-        <span className="text-sm text-black/20">이미지 준비중</span>
+      <div className="relative flex h-[320px] w-full items-center justify-center overflow-hidden rounded-[6px] border border-[#E9EAEC] bg-white transition-shadow group-hover:shadow-md">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={name}
+            fill
+            sizes="250px"
+            className="object-cover"
+          />
+        ) : (
+          <span className="text-sm text-black/20">이미지 준비중</span>
+        )}
       </div>
 
       <p className="mt-2.5 text-[16px] font-semibold leading-[1.6] text-muted">{CATEGORY_LABEL[category]}</p>

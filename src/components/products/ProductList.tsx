@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ProductCard } from "@/src/components/products/ProductCard";
-import { PRODUCTS } from "@/src/features/products/mock";
-import type { ProductCategory } from "@/src/features/products/types";
+import { createClient } from "@/src/lib/supabase/client";
+import { PRODUCT_SELECT, mapProductRow, type ProductRow } from "@/src/features/products/shared";
+import type { Product, ProductCategory } from "@/src/features/products/types";
 
 type TabKey = "all" | ProductCategory;
 
@@ -33,21 +34,42 @@ function ClearIcon({ className }: { className?: string }) {
 
 /**
  * 상품 리스트 (CSR).
+ * - 마운트 시 Supabase에서 상품을 조회한다.
  * - 검색어/카테고리 탭으로 클라이언트에서 즉시 필터링한다.
- * - 추후 Supabase 연동 시 PRODUCTS 를 fetch 결과로 교체한다.
  */
 export function ProductList() {
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<TabKey>("all");
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+
+    void supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        if (!active) return;
+        setAllProducts(((data as ProductRow[] | null) ?? []).map(mapProductRow));
+        setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const products = useMemo(() => {
     const keyword = query.trim().toLowerCase();
-    return PRODUCTS.filter((product) => {
+    return allProducts.filter((product) => {
       const matchesTab = tab === "all" || product.category === tab;
       const matchesQuery = product.name.toLowerCase().includes(keyword);
       return matchesTab && matchesQuery;
     });
-  }, [query, tab]);
+  }, [allProducts, query, tab]);
 
   return (
     <section className="w-full bg-white">
@@ -93,7 +115,9 @@ export function ProductList() {
           </div>
         </div>
 
-        {products.length > 0 ? (
+        {loading ? (
+          <p className="py-20 text-center text-sm text-black/40">상품을 불러오는 중...</p>
+        ) : products.length > 0 ? (
           <div className="mt-10 grid justify-between gap-y-9 grid-cols-[repeat(2,minmax(0,250px))] sm:grid-cols-[repeat(3,250px)] lg:grid-cols-[repeat(4,250px)]">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

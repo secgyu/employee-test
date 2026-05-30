@@ -1,12 +1,26 @@
-import { PRODUCTS } from "@/src/features/products/mock";
+import { createClient } from "@/src/lib/supabase/server";
+import { PRODUCT_SELECT, mapProductRow, type ProductRow } from "@/src/features/products/shared";
 import type { Product } from "@/src/features/products/types";
 
-/** id로 상품 단건 조회. 없으면 undefined. (추후 Supabase 쿼리로 교체) */
-export function getProductById(id: string): Product | undefined {
-  return PRODUCTS.find((product) => product.id === id);
+/** 전체 상품 조회 (sort_order 순). 서버 컴포넌트용. */
+export async function getProducts(): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .order("sort_order", { ascending: true });
+
+  return ((data as ProductRow[] | null) ?? []).map(mapProductRow);
 }
 
-/** 전체 상품 id 목록. 정적 경로 생성(generateStaticParams)에 사용. */
-export function getAllProductIds(): string[] {
-  return PRODUCTS.map((product) => product.id);
+/** id로 상품 단건 조회. 없으면 null. 서버 컴포넌트용. */
+export async function getProductById(id: string): Promise<Product | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+
+  return data ? mapProductRow(data as ProductRow) : null;
 }
