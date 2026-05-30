@@ -1,9 +1,11 @@
 import { HeroCarousel } from "@/src/components/home/HeroCarousel";
+import { ProductList } from "@/src/components/products/ProductList";
 
 export default function HomePage() {
   return (
-    <div className="pb-20">
+    <div>
       <HeroCarousel />
+      <ProductList />
     </div>
   );
 }
