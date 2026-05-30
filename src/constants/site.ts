@@ -27,5 +27,6 @@ export const COMPANY = {
   address: "경기도 고양시 일산서구 일현로 97-11, 56F",
   mailOrderNumber: "제 2024-고양일산서-1209",
   email: "Hidden_kice@naver.com",
+  phone: "0507-1353-5683",
   copyrightYear: 2026,
 } as const;
