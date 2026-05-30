@@ -7,9 +7,11 @@ import type { ChallengeStatus } from "@/src/features/challenges/types";
 
 export function ChallengeApplyPanel({
   status,
+  challengeTitle,
   baseParticipants,
 }: {
   status: ChallengeStatus;
+  challengeTitle: string;
   baseParticipants: number;
 }) {
   const [joined, setJoined] = useState(false);
@@ -21,7 +23,7 @@ export function ChallengeApplyPanel({
         현재 <span className="font-semibold text-brand">{participants.toLocaleString()}명</span>이 참여하고 있어요.
       </p>
       <div className="mt-4 max-w-[320px]">
-        <ChallengeApplyButton status={status} onJoinedChange={setJoined} />
+        <ChallengeApplyButton status={status} challengeTitle={challengeTitle} onJoinedChange={setJoined} />
       </div>
     </div>
   );

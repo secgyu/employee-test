@@ -70,7 +70,7 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-3">
-        <ChallengeApplyButton status={challenge.status} onJoinedChange={setJoined} />
+        <ChallengeApplyButton status={challenge.status} challengeTitle={challenge.title} onJoinedChange={setJoined} />
         <Link
           href={`/challenge/${challenge.id}`}
           className="text-center text-[14px] font-medium text-brand hover:underline"

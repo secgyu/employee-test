@@ -102,7 +102,11 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
 
       {/* 신청 */}
       <div className="mt-12">
-        <ChallengeApplyPanel status={challenge.status} baseParticipants={challenge.participants} />
+        <ChallengeApplyPanel
+          status={challenge.status}
+          challengeTitle={challenge.title}
+          baseParticipants={challenge.participants}
+        />
       </div>
     </div>
   );

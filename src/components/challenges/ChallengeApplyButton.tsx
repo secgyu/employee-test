@@ -2,20 +2,31 @@
 
 import { useState } from "react";
 
+import { useNotifications } from "@/src/features/notifications/NotificationContext";
 import type { ChallengeStatus } from "@/src/features/challenges/types";
 
 export function ChallengeApplyButton({
   status,
+  challengeTitle,
   onJoinedChange,
 }: {
   status: ChallengeStatus;
+  challengeTitle: string;
   onJoinedChange?: (joined: boolean) => void;
 }) {
   const [joined, setJoined] = useState(false);
+  const { addNotification } = useNotifications();
 
   function setJoinedAndNotify(next: boolean) {
     setJoined(next);
     onJoinedChange?.(next);
+    if (next) {
+      addNotification({
+        type: "system",
+        title: "챌린지 신청 완료",
+        body: `'${challengeTitle}' 챌린지 신청이 완료되었습니다.`,
+      });
+    }
   }
 
   if (status !== "recruiting") {
