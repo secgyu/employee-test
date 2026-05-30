@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import { TextField } from "@/src/components/auth/TextField";
+import { signInAction } from "@/src/features/auth/actions";
 import { isValidEmail } from "@/src/features/auth/validation";
 
 interface FieldErrors {
@@ -11,23 +13,34 @@ interface FieldErrors {
   password?: string;
 }
 
-/** 로그인 폼 (CSR). 유효성 검사 후 제출. 실제 인증은 Supabase 연동 시 처리. */
+/** 로그인 폼 (CSR). 클라이언트 검증 후 Supabase 서버 액션으로 인증한다. */
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [message, setMessage] = useState("");
+  const [formError, setFormError] = useState("");
+  const [pending, startTransition] = useTransition();
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setFormError("");
+
     const nextErrors: FieldErrors = {};
     if (!isValidEmail(email)) nextErrors.email = "올바른 이메일을 입력해 주세요.";
     if (!password) nextErrors.password = "비밀번호를 입력해 주세요.";
-
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) {
-      setMessage("로그인 기능은 Supabase 연동 후 제공됩니다. (데모)");
-    }
+    if (Object.keys(nextErrors).length > 0) return;
+
+    startTransition(async () => {
+      const result = await signInAction({ email, password });
+      if (result.ok) {
+        router.refresh();
+        router.push("/");
+      } else {
+        setFormError(result.error ?? "로그인에 실패했습니다.");
+      }
+    });
   }
 
   return (
@@ -59,13 +72,16 @@ export function LoginForm() {
 
         <button
           type="submit"
-          className="mt-2 h-12 rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90"
+          disabled={pending}
+          className="mt-2 h-12 rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          로그인
+          {pending ? "로그인 중..." : "로그인"}
         </button>
       </form>
 
-      {message ? <p className="mt-4 rounded-md bg-brand/5 px-4 py-3 text-[14px] text-brand">{message}</p> : null}
+      {formError ? (
+        <p className="mt-4 rounded-md bg-red-50 px-4 py-3 text-[14px] text-red-500">{formError}</p>
+      ) : null}
 
       <p className="mt-6 text-center text-[14px] text-muted">
         아직 회원이 아니신가요?{" "}

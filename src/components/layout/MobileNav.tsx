@@ -8,7 +8,7 @@ import { CloseIcon, MenuIcon } from "@/src/components/icons";
 import { NAV_ITEMS } from "@/src/constants/site";
 
 /** 모바일 전용 내비게이션 (md 미만에서 햄버거 메뉴). */
-export function MobileNav() {
+export function MobileNav({ loggedIn = false }: { loggedIn?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -67,10 +67,10 @@ export function MobileNav() {
               })}
               <li className="border-t border-[#E9EAEC]">
                 <Link
-                  href="/login"
+                  href={loggedIn ? "/account" : "/login"}
                   className="block py-4 text-[16px] font-semibold text-ink transition-colors hover:text-brand"
                 >
-                  로그인 / 마이페이지
+                  {loggedIn ? "마이페이지" : "로그인 / 회원가입"}
                 </Link>
               </li>
             </ul>

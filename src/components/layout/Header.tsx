@@ -7,6 +7,7 @@ import { CartLink } from "@/src/components/layout/CartLink";
 import { BellLink } from "@/src/components/layout/BellLink";
 import { UserIcon } from "@/src/components/icons";
 import { SITE } from "@/src/constants/site";
+import { createClient } from "@/src/lib/supabase/server";
 import logo from "@/src/assets/logo.png";
 
 interface IconLinkProps {
@@ -34,7 +35,13 @@ function IconLink({ label, href, badge, children }: IconLinkProps) {
   );
 }
 
-export function Header() {
+export async function Header() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const accountHref = user ? "/account" : "/login";
+
   return (
     <header className="sticky top-0 z-20 flex h-[100px] w-full items-center justify-center bg-white px-4 shadow-[0px_3px_4px_rgba(0,0,0,0.12)]">
       <div className="flex h-20 w-full max-w-[1280px] items-center justify-between gap-8">
@@ -48,10 +55,10 @@ export function Header() {
         <div className="flex items-center gap-6 text-ink">
           <CartLink />
           <BellLink />
-          <IconLink label="마이페이지" href="/login">
+          <IconLink label="마이페이지" href={accountHref}>
             <UserIcon className="h-6 w-6" />
           </IconLink>
-          <MobileNav />
+          <MobileNav loggedIn={Boolean(user)} />
         </div>
       </div>
     </header>
