@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { PagePlaceholder } from "@/src/components/layout/PagePlaceholder";
+import { LoginForm } from "@/src/components/auth/LoginForm";
 
 export const metadata: Metadata = {
   title: "로그인 | HIDDEN KICE",
 };
 
 export default function LoginPage() {
-  return <PagePlaceholder title="로그인" />;
+  return <LoginForm />;
 }
