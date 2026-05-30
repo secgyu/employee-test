@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { NavLinks } from "@/src/components/layout/NavLinks";
-import { CartIcon, BellIcon, UserIcon } from "@/src/components/icons";
+import { CartLink } from "@/src/components/layout/CartLink";
+import { BellIcon, UserIcon } from "@/src/components/icons";
 import { SITE } from "@/src/constants/site";
 import logo from "@/src/assets/logo.png";
 
@@ -43,9 +44,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-6 text-ink">
-          <IconLink label="장바구니" href="/cart" badge={1}>
-            <CartIcon className="h-6 w-6" />
-          </IconLink>
+          <CartLink />
           <IconLink label="알림" href="/notifications" badge={1}>
             <BellIcon className="h-6 w-6" />
           </IconLink>

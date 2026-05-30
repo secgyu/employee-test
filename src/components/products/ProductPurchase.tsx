@@ -1,24 +1,41 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useCart } from "@/src/features/cart/CartContext";
 import { formatKRW } from "@/src/features/products/format";
+import type { ProductCategory } from "@/src/features/products/types";
 
 interface ProductPurchaseProps {
+  id: string;
+  name: string;
+  category: ProductCategory;
   /** 단가(할인가 우선). 없으면 수량/합계 미표시 */
   unitPrice?: number;
 }
 
 /**
  * 상세 페이지의 구매 영역 (CSR).
- * 수량 조절 + 합계 계산 + 장바구니/구매 버튼.
- * 결제/장바구니 백엔드는 추후 연동, 현재는 데모 안내만 노출한다.
+ * 수량 조절 + 합계 계산 + 장바구니 담기/바로 구매(장바구니 이동).
  */
-export function ProductPurchase({ unitPrice }: ProductPurchaseProps) {
+export function ProductPurchase({ id, name, category, unitPrice }: ProductPurchaseProps) {
+  const router = useRouter();
+  const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
 
   const total = unitPrice ? unitPrice * quantity : undefined;
+
+  function handleAddToCart() {
+    addItem({ id, name, category, unitPrice: unitPrice ?? 0 }, quantity);
+    setMessage("장바구니에 담았습니다.");
+  }
+
+  function handleBuyNow() {
+    addItem({ id, name, category, unitPrice: unitPrice ?? 0 }, quantity);
+    router.push("/cart");
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -57,14 +74,14 @@ export function ProductPurchase({ unitPrice }: ProductPurchaseProps) {
       <div className="flex gap-3">
         <button
           type="button"
-          onClick={() => setMessage("장바구니에 담았습니다. (데모)")}
+          onClick={handleAddToCart}
           className="h-12 flex-1 rounded-md border border-brand text-[15px] font-medium text-brand transition-colors hover:bg-brand/5"
         >
           장바구니 담기
         </button>
         <button
           type="button"
-          onClick={() => setMessage("구매 페이지는 준비 중입니다. (데모)")}
+          onClick={handleBuyNow}
           className="h-12 flex-1 rounded-md bg-brand text-[15px] font-medium text-brand-foreground transition-opacity hover:opacity-90"
         >
           바로 구매

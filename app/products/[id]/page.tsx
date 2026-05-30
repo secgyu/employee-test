@@ -73,7 +73,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </div>
 
           <div className="mt-8">
-            <ProductPurchase unitPrice={unitPrice} />
+            <ProductPurchase id={product.id} name={name} category={category} unitPrice={unitPrice} />
           </div>
         </div>
       </div>
