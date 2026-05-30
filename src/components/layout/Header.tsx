@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { NavLinks } from "@/src/components/layout/NavLinks";
+import { MobileNav } from "@/src/components/layout/MobileNav";
 import { CartLink } from "@/src/components/layout/CartLink";
 import { BellLink } from "@/src/components/layout/BellLink";
 import { UserIcon } from "@/src/components/icons";
@@ -50,6 +51,7 @@ export function Header() {
           <IconLink label="마이페이지" href="/login">
             <UserIcon className="h-6 w-6" />
           </IconLink>
+          <MobileNav />
         </div>
       </div>
     </header>
