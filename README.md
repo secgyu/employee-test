@@ -1,25 +1,26 @@
-## 요구사항 충족설명(?)
+## 요구사항 구현 내역
 
 1. Next.js 기반으로 프론트 작업
-   -> Next.js로 작업 진행 하였음
+   -> Next.js 16(App Router)으로 구현
 
 2. vercel 기반으로 완료 내용 deploy
    -> vercel 배포 완료 : https://employee-test-phi.vercel.app/products
 
 3. supabase를 이용해서 백엔드 구현
-   -> 구현 완료. 상품·리더보드는 조회 전용, 장바구니·주문·챌린지 신청·알림·프로필은 사용자별로 저장한다.
+   -> 구현 완료. 상품·리더보드는 조회 전용, 장바구니·주문·챌린지 신청·알림·프로필은 사용자별로 저장.
    -> 인증은 Supabase Auth 사용
 
 4. 페이지를 기본적으로 ssr 방식으로 하고, 상품리스트만 csr로 할것
    -> 기본적으로 SSR을 사용하기위해
-   **products/page.tsx**를 보시면, 서버컴포넌트로되어있으며, 캐러셀과 레이아웃은 서버상에서 렌더링됩니다.
-   그리고 상품리스트만 CSR로 하기위해 products/ProductList.tsx는 클라이언트 컴포넌트로 구성하였습니다.
+   **products/page.tsx**는 서버컴포넌트로 되어있으며, 캐러셀과 레이아웃은 서버상에서 렌더링.
+   상품리스트만 CSR로 하기위해 **products/ProductList.tsx**는 클라이언트 컴포넌트로 구성.
 5. 폴더 구조를 확장 가능한 구조로 하고, 이에 대한 설명
    -> **feature-first 구조**와 **components폴더**를 사용해 확장 가능한 폴더 구성.
-   **feature/\*/** 폴더에 도메인로직 (api, 비즈니스로직, 타입, 공통코드)
+   **feature/<도메인>/** 폴더에 도메인로직 (api, 비즈니스로직, 타입, 공통코드)
    **components** 폴더에 화면 UI 컴포넌트 구성. (ui 컴포넌트 JSX, 스타일링)
+   새 도메인 추가 시 features/<도메인> 폴더만 늘리면 되어 사이드이펙트 없이 확장 가능
 
-6. vercel 주소와 githup repo 주소를 제출
+6. vercel 주소와 github repo 주소를 제출
    vercel 배포 주소 : https://employee-test-phi.vercel.app/products
    github repo 주소 : https://github.com/secgyu/employee-test
 
